@@ -1,6 +1,7 @@
 package com.coolweather.android.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.telecom.Call;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coolweather.android.R;
+import com.coolweather.android.activity.WeatherActivity;
 import com.coolweather.android.base.BaseFragment;
 import com.coolweather.android.db.City;
 import com.coolweather.android.db.Country;
@@ -85,6 +87,7 @@ public class ChooseAreaFragment extends BaseFragment {
 
     @Override
     public void initUI() {
+        Log.d(TAG, "initUI: ");
         adapter = new ArrayAdapter<String>(mContext,android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
     }
@@ -102,6 +105,15 @@ public class ChooseAreaFragment extends BaseFragment {
                 else if (currentLevel==LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCountry();
+                }
+                else if (currentLevel==LEVEL_COUNTRY){
+                    //解决progressDialog的窗体泄露
+                    progressDialog = null;
+                    String weatherId = countryList.get(position).getWeatherId();
+                    Intent intent = new Intent(mContext, WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -229,7 +241,7 @@ public class ChooseAreaFragment extends BaseFragment {
             }
         });
     }
-
+    //Activity has leaked window 窗体泄露 每个Activity都有窗体管理器 dialog需要依赖窗体管理器
     private void showProgressDialog(){
         if (progressDialog==null){
             progressDialog = new ProgressDialog(mContext);
@@ -238,10 +250,10 @@ public class ChooseAreaFragment extends BaseFragment {
         }
         progressDialog.show();
     }
-
+    //hide只是设置对话框不可见 当依赖的activity被销毁 会出现窗体泄露的问题 使用dismiss不会出现该问题
     private void hideProgressDialog(){
         if (progressDialog!=null){
-            progressDialog.hide();
+            progressDialog.dismiss();
         }
     }
 
