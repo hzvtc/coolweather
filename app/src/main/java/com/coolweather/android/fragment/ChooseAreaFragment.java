@@ -17,11 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coolweather.android.R;
+import com.coolweather.android.activity.MainActivity;
 import com.coolweather.android.activity.WeatherActivity;
 import com.coolweather.android.base.BaseFragment;
 import com.coolweather.android.db.City;
 import com.coolweather.android.db.Country;
 import com.coolweather.android.db.Province;
+import com.coolweather.android.gson.Weather;
 import com.coolweather.android.util.HttpUtil;
 import com.coolweather.android.util.Utility;
 
@@ -110,10 +112,19 @@ public class ChooseAreaFragment extends BaseFragment {
                     //解决progressDialog的窗体泄露
                     progressDialog = null;
                     String weatherId = countryList.get(position).getWeatherId();
-                    Intent intent = new Intent(mContext, WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity){
+                        Intent intent = new Intent(mContext, WeatherActivity.class);
+                        intent.putExtra("weather_id",weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                    else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
+
                 }
             }
         });
