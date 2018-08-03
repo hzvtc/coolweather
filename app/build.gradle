@@ -11,8 +11,10 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField "String", "WEATHER_API_KEY", "e4e9ac8757f54a4aa16f70e4cc6626c1"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
         }
     }
 }
@@ -24,4 +26,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    //@OnClick不生效的问题
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
