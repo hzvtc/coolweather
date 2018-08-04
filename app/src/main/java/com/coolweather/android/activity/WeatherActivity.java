@@ -10,7 +10,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -75,6 +74,9 @@ public class WeatherActivity extends AppCompatActivity {
     Button navBtn;
     @BindView(R.id.drawerLayout)
     public DrawerLayout drawerLayout;
+    public String weatherId;
+    @BindView(R.id.setting_btn)
+    Button settingBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,7 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
-        final String weatherId;
+
         if (weatherString != null) {
             //有缓存直接解析并天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
@@ -159,7 +161,7 @@ public class WeatherActivity extends AppCompatActivity {
      *
      * @param weatherId
      */
-    public void requestWeather(final String weatherId) {
+    public void requestWeather(String weatherId) {
         String address = "http://guolin.tech/api/weather?cityid="
                 + weatherId + "&key=e4e9ac8757f54a4aa16f70e4cc6626c1";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -189,6 +191,7 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather", responseText);
                             editor.apply();
                             showWeather(weather);
+
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败"
                                     , Toast.LENGTH_SHORT).show();
@@ -259,8 +262,15 @@ public class WeatherActivity extends AppCompatActivity {
         startService(intent);
     }
 
-    @OnClick(R.id.nav_btn)
-    public void onViewClicked() {
-        drawerLayout.openDrawer(GravityCompat.START);
+    @OnClick({R.id.nav_btn,R.id.setting_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()){
+            case R.id.nav_btn:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            case R.id.setting_btn:
+                break;
+        }
+
     }
 }
